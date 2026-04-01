@@ -1,0 +1,113 @@
+#include <stdio.h>
+
+#define MAX 20
+#define INF 9999
+
+int n;
+
+/* Find vertex with minimum distance */
+int findMin(int dist[], int visited[])
+{
+    int min = INF;
+    int pos = -1;
+
+    for (int i = 0; i < n; i++)
+    {
+        if (visited[i] == 0 && dist[i] < min)
+        {
+            min = dist[i];
+            pos = i;
+        }
+    }
+    return pos;
+}
+
+/* Function to print path */
+void printPath(int parent[], int j)
+{
+    if (parent[j] == -1)
+    {
+        printf("%d", j);
+        return;
+    }
+
+    printPath(parent, parent[j]);
+    printf(" -> %d", j);
+}
+
+/* Dijkstra Algorithm */
+void dijkstra(int graph[MAX][MAX], int src)
+{
+    int dist[MAX];
+    int visited[MAX];
+    int parent[MAX];
+
+    /* Initialize arrays */
+    for (int i = 0; i < n; i++)
+    {
+        dist[i] = INF;
+        visited[i] = 0;
+        parent[i] = -1;
+    }
+
+    dist[src] = 0;
+
+    /* Main algorithm */
+    for (int count = 0; count < n - 1; count++)
+    {
+        int u = findMin(dist, visited);
+
+        visited[u] = 1;
+
+        for (int v = 0; v < n; v++)
+        {
+            if (!visited[v] &&
+                graph[u][v] != 0 &&
+                dist[u] + graph[u][v] < dist[v])
+            {
+                dist[v] = dist[u] + graph[u][v];
+                parent[v] = u; // Store path
+            }
+        }
+    }
+
+    /* Print paths and costs */
+    printf("\nShortest Paths from Vertex %d:\n", src);
+
+    for (int i = 0; i < n; i++)
+    {
+        printf("\nPath to vertex %d: ", i);
+        printPath(parent, i);
+
+        printf(" Cost = %d", dist[i]);
+    }
+
+    printf("\n");
+}
+
+/* Main Function */
+int main()
+{
+    int graph[MAX][MAX];
+    int src;
+
+    printf("Enter number of vertices: ");
+    scanf("%d", &n);
+
+    printf("Enter adjacency matrix:\n");
+
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            scanf("%d", &graph[i][j]);
+        }
+    }
+
+    printf("Enter source vertex: ");
+    scanf("%d", &src);
+
+    dijkstra(graph, src);
+
+    return 0;
+}
